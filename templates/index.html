@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>Weather display</title>
+  <link rel="stylesheet" href="static/style.css" />
+</head>
+
+<body>
+  <div id="today-day">
+    <span id="today-weekday">{{ today.strftime('%A') }}</span>
+    <span id="today-daymonth">
+      <div id="today-date-day">
+        {{ today.day -}}
+        <sup>
+          {% if (today.day|string)[-1] == '1' -%}
+          st
+          {% elif (today.day|string)[-1] == '2' -%}
+          nd
+          {% elif (today.day|string)[-1] == '3' -%}
+          rd
+          {% else -%}
+          th
+          {% endif %}
+        </sup>
+      </div>
+      <div id="today-date-month">
+        {{ today.strftime('%b') }}
+      </div>
+    </span>
+  </div>
+
+  <div id="today-shorttext">
+    {{ data['forecast_daily'][0]['short_text'] }}
+  </div>
+
+  <img class="icon-big" id="today-icon" src="static/icons/{{ data['forecast_daily'][0]['icon_descriptor'] }}.svg"
+    alt="??">
+
+  {#
+  for day_increment in range(3):
+  formatted_data[f'forecast_{day_increment}_weekday'] = weekdays[day_increment + 1 % 7]
+  #}
+
+  <!-- <img class="icon-small" src="static/icons/clear_night.svg">
+  <img class="icon-small" src="static/icons/cloudy.svg">
+  <img class="icon-small" src="static/icons/cyclone.svg">
+  <img class="icon-small" src="static/icons/dust.svg">
+  <img class="icon-small" src="static/icons/fog.svg">
+  <img class="icon-small" src="static/icons/frost.svg">
+  <img class="icon-small" src="static/icons/hazy.svg">
+  <img class="icon-small" src="static/icons/heavy_rain.svg">
+  <img class="icon-small" src="static/icons/heavy_showers.svg">
+  <img class="icon-small" src="static/icons/light_showers.svg">
+  <img class="icon-small" src="static/icons/mostly_sunny.svg">
+  <img class="icon-small" src="static/icons/rain.svg">
+  <img class="icon-small" src="static/icons/showers.svg">
+  <img class="icon-small" src="static/icons/snow.svg">
+  <img class="icon-small" src="static/icons/storms.svg">
+  <img class="icon-small" src="static/icons/sunny.svg">
+  <img class="icon-small" src="static/icons/wind.svg"> -->
+</body>
+
+</html>

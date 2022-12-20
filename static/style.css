@@ -1,0 +1,68 @@
+* {
+  overflow: hidden;
+  font-family: "Rubik", sans-serif;
+  /* color: red; */
+}
+
+html {
+  background-color: black;
+}
+
+body {
+  background-color: white;
+  position: absolute;
+  width: 640px;
+  height: 400px;
+  margin: 0;
+}
+
+.icon-small {
+  width: 64px;
+  height: 64px;
+  font-size: 24pt;
+  text-align: center;
+  line-height: 64px;
+}
+
+.icon-big {
+  width: 192px;
+  height: 192px;
+  font-size: 60pt;
+  text-align: center;
+  line-height: 192px;
+}
+
+#today-day {
+  position: absolute;
+  top: 0px;
+  left: 10px;
+}
+
+#today-daymonth {
+  margin-left: 15px;
+  display: inline-block;
+  font-size: 16pt;
+}
+
+#today-date-day {
+  font-weight: bold;
+}
+
+#today-weekday {
+  font-size: 45pt;
+  font-weight: lighter;
+}
+
+#today-shorttext {
+  position: absolute;
+  top: 85px;
+  left: 10px;
+  font-size: 18pt;
+  font-weight: 500;
+}
+
+#today-icon {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+}
