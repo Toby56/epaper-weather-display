@@ -3,45 +3,95 @@
 
 <head>
   <meta charset="UTF-8" />
-  <title>Weather display</title>
+  <title>ePaper Weather Display</title>
   <link rel="stylesheet" href="static/style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="static/script.js"></script>
 </head>
 
 <body>
-  <div id="today-day">
-    <span id="today-weekday">{{ today.strftime('%A') }}</span>
-    <span id="today-daymonth">
+  <div id="today-header">
+    <span id="today-date-weekday"></i>{{ today.strftime('%A') }}</span>
+    <span id="today-date-daymonth">
       <div id="today-date-day">
-        {{ today.day -}}
-        <sup>
-          {% if (today.day|string)[-1] == '1' -%}
-          st
-          {% elif (today.day|string)[-1] == '2' -%}
-          nd
-          {% elif (today.day|string)[-1] == '3' -%}
-          rd
-          {% else -%}
-          th
-          {% endif %}
-        </sup>
+        {{ today.day }}<sup>{{ ['th', 'st', 'nd', 'rd'][[(today.day|string)[-1]|int, 4]|min % 4] }}</sup>
       </div>
-      <div id="today-date-month">
-        {{ today.strftime('%b') }}
-      </div>
+      {{ today.strftime('%b') }}
     </span>
   </div>
 
-  <div id="today-shorttext">
-    {{ data['forecast_daily'][0]['short_text'] }}
+  <div id="today-shorttext">{{ data.daily[0].short_text }}</div>
+
+  <img class="icon" id="today-icon" src="static/icons/{{ data.daily[0].icon_descriptor }}.svg" alt="??">
+
+  <div id="today-temps">
+    {% if data.daily[0].temp_min %}
+    <span>
+      <div class="today-temps-heading">Min</div>
+      <div class="today-temps-numeral">{{ data.daily[0].temp_min }}&deg;</div>
+    </span>
+    {% endif %}
+    <span>
+      <div class="today-temps-heading">Max</div>
+      <div class="today-temps-numeral temps-max">{{ data.daily[0].temp_max }}&deg;</div>
+    </span>
+    {% if not data.daily[0].temp_min %}
+    {% if data.daily[0].now.now_label == 'Overnight Min' %}
+    <span>
+      <div class="today-temps-heading">Min tonight</div>
+      <div class="today-temps-numeral">{{ data.daily[0].now.temp_now }}&deg;</div>
+    </span>
+    {% elif data.daily[0].now.later_label == 'Overnight Min' %}
+    <span>
+      <div class="today-temps-heading">Min tonight</div>
+      <div class="today-temps-numeral">{{ data.daily[0].now.temp_later }}&deg;</div>
+    </span>
+    {% else %}
+    <span>
+      <div class="today-temps-heading">{{ data.daily[0].now.later_label }}</div>
+      <div class="today-temps-numeral">{{ data.daily[0].now.temp_later }}&deg;</div>
+    </span>
+    {% endif %}
+    {% endif %}
   </div>
 
-  <img class="icon-big" id="today-icon" src="static/icons/{{ data['forecast_daily'][0]['icon_descriptor'] }}.svg"
-    alt="??">
+  <div id="today-stats-rain">
+    <div class="today-stats-heading">Rain</div>
+    <div class="today-stats-line">
+      <span class="today-stats-numeral">{{ data.daily[0].rain.chance }}</span>
+      <span class="today-stats-units">%</span>
+      <span class="today-stats-tail">&nbsp;chance</span>
+      {% if data.daily[0].rain.amount.max %}
+    </div>
+    <div class="today-stats-line">
+      <span class="today-stats-numeral">
+        {{ data.daily[0].rain.amount.min }}-{{ data.daily[0].rain.amount.max
+        }}
+      </span>
+      <span class="today-stats-units">mm</span>
+      <span class="today-stats-tail">&nbsp;of rain</span>
+      {% endif %}
+    </div>
+  </div>
 
-  {#
-  for day_increment in range(3):
-  formatted_data[f'forecast_{day_increment}_weekday'] = weekdays[day_increment + 1 % 7]
-  #}
+  <div id="today-stats-temp">
+    <div class="today-stats-heading">Temp now</div>
+    <div class="today-stats-line">
+      <span class="today-stats-numeral">{{ (data.obs.temp|float|string).split('.')[0] }}</span>
+      <span class="today-stats-decimal">.{{ (data.obs.temp|float|string).split('.')[1] }}&deg;</span>
+    </div>
+  </div>
+
+  <div id="today-graph">
+    <canvas id="today-graph-canvas"></canvas>
+  </div>
+
+  <!-- <div id="forecast">
+    {% for day in range(3) %}
+    <div class="forecast-day">{{ weekdays[today.weekday() + day % 7]|capitalize }}: {{data.daily[day + 1].temp_max }}
+    </div>
+    {% endfor %}
+  </div> -->
 
   <!-- <img class="icon-small" src="static/icons/clear_night.svg">
   <img class="icon-small" src="static/icons/cloudy.svg">
