@@ -1,29 +1,46 @@
-document.addEventListener("DOMContentLoaded", (event) => {
+function draw_temp_graph(temps) {
   const ctx = document.getElementById("today-graph-canvas");
 
-  var numbers = [
-    17, 17, 17, 16, 15, 15, 15, 15, 17, 19, 20, 21, 23, 24, 25, 26, 26, 26, 25,
-    23, 21, 19, 18, 17, 16,
-  ];
+  // Test data
+  // var temps = [
+  //   17, 17, 17, 16, 15, 15, 15, 15, 17, 19, 20, 21, 23, 24, 25, 26, 26, 26, 25,
+  //   23, 21, 19, 18, 17, 16,
+  // ];
+
+  console.log(temps);
 
   var data = [];
-
-  for (let i = 0; i < numbers.length; i++) {
-    data.push({ x: i, y: numbers[i] });
+  for (let i = 0; i < temps.length; i++) {
+    data.push({ x: i, y: temps[i] });
   }
+
+  var now_hour = new Date().getHours();
+  var now_point = {
+    x: now_hour,
+    y: temps[now_hour],
+  };
 
   new Chart(ctx, {
     data: {
       datasets: [
         {
           type: "line",
-          order: 2,
           data: data,
+          borderWidth: 4,
+          pointStyle: false,
+          borderColor: "black",
+          borderCapStyle: "round",
+          cubicInterpolationMode: "default",
+          tension: 0.5,
+          order: 2,
         },
         {
-          type: "bar",
-          maxBarThickness: 12,
-          data: [{ x: "12", y: Math.max(...numbers) }],
+          type: "scatter",
+          data: [now_point],
+          backgroundColor: "rgb(255, 0, 0)",
+          borderWidth: 4,
+          borderColor: "white",
+          radius: 8,
         },
       ],
     },
@@ -32,49 +49,13 @@ document.addEventListener("DOMContentLoaded", (event) => {
       animation: false,
       scales: {
         x: {
-          display: false,
           type: "linear",
-          ticks: {
-            display: false,
-            color: "black",
-            maxRotation: 0,
-            font: {
-              size: 16,
-              family: "Rubik, sans-serif",
-            },
-          },
-          border: {
-            display: false,
-          },
-          grid: {
-            tickLength: 0,
-            color: "black",
-            display: false,
-          },
+          display: false,
         },
         y: {
           display: false,
-          min: Math.min(...numbers) - 1,
-          max: Math.max(...numbers) + 1,
-        },
-      },
-      elements: {
-        point: {
-          pointStyle: false,
-        },
-        line: {
-          borderWidth: 4,
-          borderColor: "black",
-          borderCapStyle: "round",
-          cubicInterpolationMode: "default",
-          tension: 0.5,
-        },
-        bar: {
-          borderRadius: 6,
-          borderWidth: 4,
-          borderColor: "white",
-          backgroundColor: "black",
-          zIndex: 2,
+          // min: Math.min(...temps) - 2,
+          max: Math.max(...temps) + 2,
         },
       },
       plugins: {
@@ -87,4 +68,10 @@ document.addEventListener("DOMContentLoaded", (event) => {
       },
     },
   });
+}
+
+document.addEventListener("DOMContentLoaded", (event) => {
+  fetch("/todays-hourly-temps")
+    .then((response) => response.json())
+    .then((data) => draw_temp_graph(data));
 });
