@@ -37,7 +37,7 @@ def index():
         data[data_category] = load_data(API_URLs[data_category])
 
     today = date.today()
-    weekdays = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday']
+    weekdays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
     # Render and load HTML template!
     try:
         return render_template('index.html', data=data, today=today, weekdays=weekdays)

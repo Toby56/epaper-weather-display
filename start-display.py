@@ -13,9 +13,10 @@ logfile = open('debug.log', 'a')
 
 start_time = time.time()
 def time_elapsed():
-    return f'{round(start_time - time.time(), 2)}s'
+    return f'{round(time.time() - start_time, 2)}s'
 
-logging.info('\n\n\nStarting gunicorn server')
+print('\n\n\n', file=logfile)
+logging.info('Starting gunicorn server')
 
 gunicorn_process = Popen(shlex.split(f'{sys.executable} -m gunicorn --access-logfile=- \'app:app\''),
     stdout=logfile, stderr=logfile)
@@ -52,7 +53,7 @@ inky.set_image(resizedimage, saturation=0)
 inky.show()
 
 logfile.close()
-logging.info(f'Done in {time_elapsed}, BYE!')
+logging.info(f'Done in {time_elapsed()}, BYE!')
 
 # Ping method
 # ping = tcping.Ping('127.0.0.1', 8000)
