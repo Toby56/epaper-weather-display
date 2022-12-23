@@ -13,15 +13,8 @@ body {
   position: absolute;
   width: 640px;
   height: 400px;
+  overflow: hidden;
   margin: 0;
-}
-
-.icon {
-  width: 64px;
-  height: 64px;
-  font-size: 24pt;
-  text-align: center;
-  line-height: 64px;
 }
 
 /* GENERAL STYLES */
@@ -76,6 +69,7 @@ body {
   height: 160px;
   font-size: 60pt;
   line-height: 160px;
+  text-align: center;
 }
 
 /* TODAY TEMPS */
@@ -152,10 +146,70 @@ body {
 
 #today-graph {
   position: absolute;
-  bottom: 5px;
-  left: 110px;
-  right: 200px;
-  height: 70px;
+  bottom: 0px;
+  left: 100px;
+  width: 320px;
+  height: 90px;
 }
 
 /* FORECAST */
+
+#forecast {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  top: 10px;
+  right: 5px;
+  bottom: 5px;
+  width: 200px;
+}
+
+#forecast > div {
+  /* background-color: rgba(0, 0, 0, 0.1); */
+  height: 33%;
+  position: relative;
+}
+
+.forecast-heading {
+  font-size: 18pt;
+}
+
+.forecast-shorttext {
+  font-size: 12pt;
+  font-weight: 500;
+}
+
+.forecast-icon {
+  position: absolute;
+  top: 45px;
+  width: 64px;
+  height: 64px;
+  font-size: 24pt;
+  text-align: center;
+  line-height: 64px;
+}
+
+.forecast-temps {
+  position: absolute;
+  display: flex;
+  font-size: 27pt;
+  font-weight: lighter;
+  top: 45px;
+  left: 75px;
+}
+
+.forecast-temps-numeral {
+  margin-right: 13px;
+}
+
+#forecast-stats-rain {
+  position: absolute;
+  top: 85px;
+  left: 75px;
+  font-size: 12pt;
+}
+
+.forecast-stats-numeral {
+  font-weight: 500;
+}

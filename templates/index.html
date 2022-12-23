@@ -61,17 +61,16 @@
       <span class="today-stats-numeral">{{ data.daily[0].rain.chance }}</span>
       <span class="today-stats-units">%</span>
       <span class="today-stats-tail">&nbsp;chance</span>
-      {% if data.daily[0].rain.amount.max %}
     </div>
+    {% if data.daily[0].rain.amount.max %}
     <div class="today-stats-line">
       <span class="today-stats-numeral">
-        {{ data.daily[0].rain.amount.min }}-{{ data.daily[0].rain.amount.max
-        }}
+        {{ data.daily[0].rain.amount.min }}-{{ data.daily[0].rain.amount.max }}
       </span>
       <span class="today-stats-units">mm</span>
       <span class="today-stats-tail">&nbsp;of rain</span>
-      {% endif %}
     </div>
+    {% endif %}
   </div>
 
   <div id="today-stats-temp">
@@ -86,30 +85,31 @@
     <canvas id="today-graph-canvas"></canvas>
   </div>
 
-  <!-- <div id="forecast">
-    {% for day in range(3) %}
-    <div class="forecast-day">{{ weekdays[today.weekday() + day % 7]|capitalize }}: {{data.daily[day + 1].temp_max }}
+  <div id="forecast">
+    {% for day in range(1, 4) %}
+    <div>
+      <div class="forecast-heading">{{ weekdays[(today.weekday() + day ) % 7] }}</div>
+      <div class="forecast-shorttext">{{ data.daily[day].short_text }}</div>
+      <img class="forecast-icon" src="static/icons/{{ data.daily[day].icon_descriptor }}.svg" alt="??">
+      <div class="forecast-temps">
+        <span class="forecast-temps-numeral">{{ data.daily[day].temp_min }}&deg;</span>
+        <span class="forecast-temps-numeral temps-max">{{ data.daily[day].temp_max }}&deg;</span>
+      </div>
+      <div id="forecast-stats-rain">
+        <div class="forecast-stats-line">
+          <span class="forecast-stats-numeral">{{ data.daily[day].rain.chance }}%</span> chance
+        </div>
+        {% if data.daily[day].rain.amount.max %}
+        <div class="forecast-stats-line">
+          <span class="forecast-stats-numeral">
+            {{ data.daily[day].rain.amount.min }}-{{ data.daily[day].rain.amount.max }}mm
+          </span>
+        </div>
+        {% endif %}
+      </div>
     </div>
     {% endfor %}
-  </div> -->
-
-  <!-- <img class="icon-small" src="static/icons/clear_night.svg">
-  <img class="icon-small" src="static/icons/cloudy.svg">
-  <img class="icon-small" src="static/icons/cyclone.svg">
-  <img class="icon-small" src="static/icons/dust.svg">
-  <img class="icon-small" src="static/icons/fog.svg">
-  <img class="icon-small" src="static/icons/frost.svg">
-  <img class="icon-small" src="static/icons/hazy.svg">
-  <img class="icon-small" src="static/icons/heavy_rain.svg">
-  <img class="icon-small" src="static/icons/heavy_showers.svg">
-  <img class="icon-small" src="static/icons/light_showers.svg">
-  <img class="icon-small" src="static/icons/mostly_sunny.svg">
-  <img class="icon-small" src="static/icons/rain.svg">
-  <img class="icon-small" src="static/icons/showers.svg">
-  <img class="icon-small" src="static/icons/snow.svg">
-  <img class="icon-small" src="static/icons/storms.svg">
-  <img class="icon-small" src="static/icons/sunny.svg">
-  <img class="icon-small" src="static/icons/wind.svg"> -->
+  </div>
 </body>
 
 </html>
