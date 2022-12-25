@@ -67,9 +67,6 @@ body {
   left: 10px;
   width: 160px;
   height: 160px;
-  font-size: 60pt;
-  line-height: 160px;
-  text-align: center;
 }
 
 /* TODAY TEMPS */
@@ -89,7 +86,7 @@ body {
 .today-temps-heading {
   font-size: 12pt;
   font-weight: 500;
-  margin-bottom: -3px;
+  margin-bottom: -5px;
 }
 
 .today-temps-numeral {
@@ -185,9 +182,6 @@ body {
   top: 45px;
   width: 64px;
   height: 64px;
-  font-size: 24pt;
-  text-align: center;
-  line-height: 64px;
 }
 
 .forecast-temps {

@@ -14,7 +14,7 @@ from io import BytesIO
 # xml = etree.parse('ftp://ftp.bom.gov.au/anon/gen/fwo/IDV10751.xml')
 
 # Paths and URLs
-hourly_temps_log_path = "../weather-data-logs/hourly-temps.json"
+hourly_temps_log_path = "../data/hourly-temp-log.json"
 
 API_URLs = {
     'observations': 'https://api.weather.bom.gov.au/v1/locations/r1r0z4/observations',
@@ -29,43 +29,38 @@ def load_API_data(URL):
             return json.load(JSON_data)['data']
     except urllib.error.HTTPError as error:
         logging.error(f'Failed to load data from URL: {URL}', error)
+        raise
+    except urllib.error.URLError as error:
+        logging.error(f'Failed to load data from URL: {URL}', error)
+        raise
 
 # Flask app
 app = Flask(__name__)
+data = {}
+
+# Setup logging if not in debug mode
 if not app.debug:
     logging.basicConfig(filename='debug.log', format='[%(asctime)s] [%(levelname)s] %(message)s', level=logging.DEBUG)
 
+# Serve weather display page
 @app.route('/')
 def index():
-    # Load data
-    data = {}
-    data['obs'] = load_API_data(API_URLs['observations'])
-    data['daily'] = load_API_data(API_URLs['forecast-daily'])
-
-    # Some utility variables
-    today = date.today()
-    weekdays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
-
-    # Render and load HTML template!
     try:
-        return render_template('index.html', data=data, today=today, weekdays=weekdays)
+        data['obs'] = load_API_data(API_URLs['observations'])
+        data['daily'] = load_API_data(API_URLs['forecast-daily'])
+        data['hourly'] = load_API_data(API_URLs['forecast-hourly'])
     except Exception as error:
-        logging.error(error)
-        return render_template('error.html', error=error)
-
-@app.route('/todays-hourly-temps')
-def todays_hourly_temps():
+        return render_template('error.html', error=f'Error fetching data\n{error}')
+   
     # Maintain a JSON log file of the hourly forecast temperatures
     hourly_temps = {}
     if os.path.exists(hourly_temps_log_path):
         with open(hourly_temps_log_path, 'r') as hourly_temps_log:
-            try:
-                hourly_temps = json.load(hourly_temps_log)
-            except:
-                pass
+            try: hourly_temps = json.load(hourly_temps_log)
+            except: pass
         os.remove(hourly_temps_log_path)
 
-    for hour in load_API_data(API_URLs['forecast-hourly']):
+    for hour in data['hourly']:
         hour_time = isoparse(hour['time']).replace(tzinfo=timezone.utc).astimezone(tz=None)
         iso_date = hour_time.date().isoformat()
         if iso_date not in hourly_temps.keys():
@@ -76,13 +71,27 @@ def todays_hourly_temps():
         json.dump(hourly_temps, hourly_temps_log)
 
     # Compile an array of todays' hourly temperatures
-    todays_hourly_temps = []
+    data['todays-hourly-temps'] = []
     for hour in range(24):
         hour = str(hour)
         if hour in hourly_temps[date.today().isoformat()].keys():
-            todays_hourly_temps.append(hourly_temps[date.today().isoformat()][hour])
+            data['todays-hourly-temps'].append(hourly_temps[date.today().isoformat()][hour])
         # else:
         #     todays_hourly_temps.append(0)
 
-    return send_file(BytesIO(json.dumps(todays_hourly_temps).encode()), 'application/json')
+    # Some utility variables
+    today = date.today()
+    weekdays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+
+    # Render and load HTML template!
+    try:
+        return render_template('index.html', data=data, today=today, weekdays=weekdays)
+    except Exception as error:
+        logging.error(error)
+        return render_template('error.html', error=f'Error rendering html template\n{error}')
+
+# Serve hourly temperature data
+@app.route('/todays-hourly-temps')
+def todays_hourly_temps():
+    return send_file(BytesIO(json.dumps(data['todays-hourly-temps']).encode()), 'application/json')
 

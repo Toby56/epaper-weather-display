@@ -1,4 +1,4 @@
-function draw_temp_graph(temps) {
+function draw_graph(temps) {
   const ctx = document.getElementById("today-graph-canvas");
 
   // Test data
@@ -7,19 +7,27 @@ function draw_temp_graph(temps) {
   //   23, 21, 19, 18, 17, 16,
   // ];
 
-  console.log(temps);
-
+  // Format list of numbers into {x, y} format
   var data = [];
-  for (let i = 0; i < temps.length; i++) {
+  for (let i = 0; i <= temps.length; i++) {
     data.push({ x: i, y: temps[i] });
   }
 
+  // Define a point at the current hour
   var now_hour = new Date().getHours();
   var now_point = {
     x: now_hour,
     y: temps[now_hour],
   };
 
+  now_point_colour =
+    "rgb(" +
+    255 *
+      ((temps[now_hour] - Math.min(...temps)) /
+        (Math.max(...temps) - Math.min(...temps))) +
+    ", 0, 0)";
+
+  // Draw the graph!
   new Chart(ctx, {
     data: {
       datasets: [
@@ -37,7 +45,7 @@ function draw_temp_graph(temps) {
         {
           type: "scatter",
           data: [now_point],
-          backgroundColor: "rgb(255, 0, 0)",
+          backgroundColor: now_point_colour,
           borderWidth: 4,
           borderColor: "white",
           radius: 8,
@@ -51,10 +59,12 @@ function draw_temp_graph(temps) {
         x: {
           type: "linear",
           display: false,
+          min: 0,
+          max: temps.length,
         },
         y: {
           display: false,
-          // min: Math.min(...temps) - 2,
+          min: Math.min(...temps) - 2,
           max: Math.max(...temps) + 2,
         },
       },
@@ -70,8 +80,10 @@ function draw_temp_graph(temps) {
   });
 }
 
-document.addEventListener("DOMContentLoaded", (event) => {
+document.addEventListener("DOMContentLoaded", () => {
   fetch("/todays-hourly-temps")
     .then((response) => response.json())
-    .then((data) => draw_temp_graph(data));
+    .then((data) => {
+      draw_graph(data);
+    });
 });

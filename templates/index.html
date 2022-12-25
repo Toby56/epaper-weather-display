@@ -3,10 +3,13 @@
 
 <head>
   <meta charset="UTF-8" />
+
   <title>ePaper Weather Display</title>
+
   <link rel="stylesheet" href="static/style.css" />
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.1.1/dist/chart.umd.min.js"></script>
+
   <script src="static/script.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.1.1/dist/chart.umd.min.js"></script>
 </head>
 
 <body>
@@ -22,7 +25,7 @@
 
   <div id="today-shorttext">{{ data.daily[0].short_text }}</div>
 
-  <img class="icon" id="today-icon" src="static/icons/{{ data.daily[0].icon_descriptor }}.svg" alt="??">
+  <img class="icon" id="today-icon" src="static/icons/{{ data.daily[0].icon_descriptor }}.svg">
 
   <div id="today-temps">
     {% if data.daily[0].temp_min %}
@@ -90,7 +93,7 @@
     <div>
       <div class="forecast-heading">{{ weekdays[(today.weekday() + day ) % 7] }}</div>
       <div class="forecast-shorttext">{{ data.daily[day].short_text }}</div>
-      <img class="forecast-icon" src="static/icons/{{ data.daily[day].icon_descriptor }}.svg" alt="??">
+      <img class="forecast-icon" src="static/icons/{{ data.daily[day].icon_descriptor }}.svg">
       <div class="forecast-temps">
         <span class="forecast-temps-numeral">{{ data.daily[day].temp_min }}&deg;</span>
         <span class="forecast-temps-numeral temps-max">{{ data.daily[day].temp_max }}&deg;</span>
