@@ -7,7 +7,7 @@ function draw_graph() {
   canvas.height = canvas.clientHeight;
 
   // Load data from canvas data attribute
-  var temps = JSON.parse(canvas.dataset.todayshourlytemps);
+  var temps = JSON.parse(canvas.dataset.todayhourlytemps);
 
   // Test data
   // var temps = [
@@ -41,14 +41,12 @@ function draw_graph() {
   }
 
   function pointPos(index) {
-    var temp = temps[index];
-
     x = padding + ((canvas.width - 2 * padding) / (temps.length - 1)) * index;
     y =
       canvas.height -
       (padding +
         ((canvas.height - 2 * padding) / tempsRange) *
-          (temp - Math.min(...temps)));
+          (temps[index] - Math.min(...temps)));
 
     return { x: x, y: y };
   }
