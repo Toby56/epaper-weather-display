@@ -1,25 +1,33 @@
 #!/usr/bin/env python3
 
-from PIL import Image
+import logging
+
 from inky.auto import auto
 from inky.inky_uc8159 import CLEAN
+from PIL import Image
+
 import sys
+import os.path
 from subprocess import Popen, TimeoutExpired
 import shlex
 import shutil
-import os.path
+
 import time
 from datetime import datetime
-import logging
+
+# Paths
+dirname = os.path.dirname(os.path.abspath(__file__))
+screenshot_path = os.path.join(dirname, 'screenshot.png')
 
 # Set up logging
 logging.basicConfig(filename='debug.log', format='[%(asctime)s] [%(levelname)s] %(message)s', level=logging.DEBUG)
 logfile = open('debug.log', 'a')
-print('\n\n\n', file=logfile)
 
 def log(message):
     logging.info(message)
     print(message)
+
+log('-- DISPLAY SCRIPT START --')
 
 start_time = time.time()
 def time_elapsed():
@@ -28,18 +36,19 @@ def time_elapsed():
 # Start Gunicorn process and wait for server to start
 log('Starting gunicorn server')
 
-gunicorn_process = Popen(shlex.split(f'{sys.executable} -m gunicorn --access-logfile=- \'app:app\''),
+gunicorn_command = f'{sys.executable} -m gunicorn --access-logfile=- --chdir=\'{dirname}\' \'app:app\''
+gunicorn_process = Popen(shlex.split(gunicorn_command),
     stdout=logfile, stderr=logfile)
 
 time.sleep(2)
 
 # Start Chromium process
-log('Rendering screenshot with Chromium')
+log(f'Rendering display to an image with Chromium')
 
-chromium_command = 'chromium-browser --headless --window-size=640,400 --screenshot="./screenshot.png" "http://127.0.0.1:8000"'
+chromium_command = f'chromium-browser --headless --window-size=640,400 --screenshot="{screenshot_path}" "http://127.0.0.1:8000"'
 chromium_process = Popen(shlex.split(chromium_command), stdout=logfile, stderr=logfile)
 
-# Wait for Chromium process to finish or force kill it
+# Wait for Chromium process to finish or kill it
 try:
     chromium_process.communicate(timeout=10)
     log('Chromium done, stopping gunicorn server')
@@ -47,7 +56,7 @@ except TimeoutExpired:
     logging.warn('Chromium did not quit, killing and stopping gunicorn server')
     chromium_process.kill()
 
-# Send terminate signal to Gunicorm process or force kill it
+# Send terminate signal to Gunicorm process or kill it
 gunicorn_process.terminate()
 try:
     gunicorn_process.communicate(timeout=10)
@@ -71,17 +80,19 @@ if datetime.now().hour == 0:
     time.sleep(1.0)
 
 # Write screenshot to display
-image = Image.open('./screenshot.png').resize(inky.resolution)
-inky.set_image(image, saturation=0)
+image = Image.open(screenshot_path)
+resized_image = image.resize(inky.resolution)
+inky.set_image(resized_image, saturation=0)
 inky.show()
 
-# Options
+# Optionally, save a copy of each image
 log('Saving a copy of the image')
 file_index = 1
-path = f'../data/screenshots/'
-while os.path.exists(f'{path}screenshot{file_index}.png'): file_index += 1
-shutil.copyfile('./screenshot.png', f'{path}screenshot{file_index}.png')
+screenshot_log_path = os.path.join(dirname, '..', 'data', 'screenshots')
+while os.path.exists(os.path.join(screenshot_log_path, f'screenshot{file_index}.png')): file_index += 1
+shutil.copyfile(screenshot_path, f'{screenshot_log_path}screenshot{file_index}.png')
 
 # Finish up
 logfile.close()
 log(f'Done in {time_elapsed()}, BYE!')
+log('-- DISPLAY SCRIPT END --')

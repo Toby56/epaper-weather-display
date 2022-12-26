@@ -1,10 +1,14 @@
 #!/usr/bin/env python3
 
 import logging
-from flask import Flask, render_template, send_file
+
+import os
+
+from flask import Flask, render_template
+
 import urllib
 import json
-import os
+
 from dateutil.parser import isoparse
 from datetime import date, timezone
 
@@ -12,16 +16,13 @@ from datetime import date, timezone
 # from lxml import etree
 # xml = etree.parse('ftp://ftp.bom.gov.au/anon/gen/fwo/IDV10751.xml')
 
-# Paths and URLs
-hourly_temps_log_path = "../data/hourly-temp-log.json"
-
+# API stuff
 API_URLs = {
     'observations': 'https://api.weather.bom.gov.au/v1/locations/r1r0z4/observations',
     'forecast-daily': 'https://api.weather.bom.gov.au/v1/locations/r1r0z4/forecasts/daily',
     'forecast-hourly': 'https://api.weather.bom.gov.au/v1/locations/r1r0z4/forecasts/hourly'
 }
 
-# Data
 def load_API_data(URL):
     try:
         with urllib.request.urlopen(URL) as JSON_data:
@@ -55,6 +56,8 @@ def index():
    
     # Maintain a JSON log file of the hourly forecast temperatures
     hourly_temps = {}
+    hourly_temps_log_path = "../data/hourly-temp-log.json"
+
     ## Load json log file and delete it if it exists
     if os.path.exists(hourly_temps_log_path):
         with open(hourly_temps_log_path, 'r') as hourly_temps_log:
