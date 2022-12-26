@@ -135,7 +135,7 @@ body {
 
 #today-stats-temp {
   position: absolute;
-  bottom: 15px;
+  bottom: 20px;
   left: 10px;
 }
 
@@ -143,10 +143,10 @@ body {
 
 #today-graph {
   position: absolute;
-  bottom: 0px;
-  left: 100px;
-  width: 320px;
-  height: 90px;
+  bottom: 10px;
+  left: 110px;
+  width: 300px;
+  height: 75px;
 }
 
 /* FORECAST */

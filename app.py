@@ -50,6 +50,7 @@ def index():
         data['daily'] = load_API_data(API_URLs['forecast-daily'])
         data['hourly'] = load_API_data(API_URLs['forecast-hourly'])
     except Exception as error:
+        logging.error(error)
         return render_template('error.html', error=f'Error fetching data\n{error}')
    
     # Maintain a JSON log file of the hourly forecast temperatures
@@ -71,13 +72,13 @@ def index():
         json.dump(hourly_temps, hourly_temps_log)
 
     # Compile an array of todays' hourly temperatures
-    data['todays-hourly-temps'] = []
+    data['todays_hourly_temps'] = []
     for hour in range(24):
         hour = str(hour)
         if hour in hourly_temps[date.today().isoformat()].keys():
-            data['todays-hourly-temps'].append(hourly_temps[date.today().isoformat()][hour])
-        # else:
-        #     todays_hourly_temps.append(0)
+            data['todays_hourly_temps'].append(hourly_temps[date.today().isoformat()][hour])
+        else:
+            data['todays_hourly_temps'].append(25)
 
     # Some utility variables
     today = date.today()
@@ -90,8 +91,8 @@ def index():
         logging.error(error)
         return render_template('error.html', error=f'Error rendering html template\n{error}')
 
-# Serve hourly temperature data
-@app.route('/todays-hourly-temps')
-def todays_hourly_temps():
-    return send_file(BytesIO(json.dumps(data['todays-hourly-temps']).encode()), 'application/json')
+# # Serve hourly temperature data
+# @app.route('/todays-hourly-temps')
+# def todays_hourly_temps():
+#     return send_file(BytesIO(json.dumps(data['todays-hourly-temps']).encode()), 'application/json')
 
